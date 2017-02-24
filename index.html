@@ -11,6 +11,7 @@
     <span id="status">Loading...</span>
     <input id="letters" type="text" />
     <button id="findAnagramsButton">Find anagrams</button>
+    <button id="findLongestWordsButton">Find longest words</button>
     <p id="results"></p>
 
     <script type="text/javascript">
@@ -18,11 +19,18 @@
         UI = {
             status: document.getElementById('status'),
             findAnagramsButton: document.getElementById('findAnagramsButton'),
+            findLongestWordsButton: document.getElementById('findLongestWordsButton'),
             letters: document.getElementById('letters'),
             results: document.getElementById('results')
         };
 
         /* prototype extensions */
+        String.prototype.removeCharAt = function(i) {
+            if (i < 0 || i > this.length) {
+                throw 'Index out of range: ' + i + '. Length of string: ' + this.length;
+            }
+            return this.slice(0, i) + this.slice(i + 1);
+        }
         String.prototype.toAnagramKey = function () {
             // return characters in alphabetical order
             return this.split('').sort().join('');
@@ -76,6 +84,21 @@
             return anagrams;
         }
 
+        function findLongestWords(letters, maxNumberOfExtraTiles = 1) {
+            var candidates = [];
+            for (var i = 0; i <= maxNumberOfExtraTiles; i++) {
+                var anagrams = findAnagrams(letters + '?'.repeat(i));
+                candidates = candidates.concat(anagrams);
+            }
+            // also include longest words of 1 fewer tiles
+            for (var i = 0; i < letters.length; i++) {
+                var newLetters = letters.removeCharAt(i);
+                var anagrams = findAnagrams(newLetters);
+                candidates = candidates.concat(anagrams);
+            }
+            return candidates.distinct();
+        }
+
         /* globals */
         var alphabet = 'abcdefghijklmnopqrstuvwxyz';
         var words = [];
@@ -90,7 +113,13 @@
             var anagrams = findAnagrams(letters);
             UI.status.innerText = anagrams.length + ' anagrams found';
             UI.results.innerText = anagrams.join('\r');
-        }
+        };
+        UI.findLongestWordsButton.onclick = function () {
+            var letters = UI.letters.value;
+            var longestWords = findLongestWords(letters);
+            UI.status.innerText = longestWords.length + ' words found';
+            UI.results.innerText = longestWords.join('\r');
+        };
     </script>
 </body>
 
