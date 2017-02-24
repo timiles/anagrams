@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+
+    <span id="status">Loading...</span>
+    <input id="letters" type="text" />
+    <button id="findAnagramsButton">Find anagrams</button>
+    <p id="results"></p>
+
+    <script type="text/javascript">
+        /* UI */
+        UI = {
+            status: document.getElementById('status'),
+            findAnagramsButton: document.getElementById('findAnagramsButton'),
+            letters: document.getElementById('letters'),
+            results: document.getElementById('results')
+        };
+
+        /* prototype extensions */
+        String.prototype.toAnagramKey = function () {
+            // return characters in alphabetical order
+            return this.split('').sort().join('');
+        }
+
+        Array.prototype.distinct = function () {
+            var a = [];
+            for (var i = 0, l = this.length; i < l; i++)
+                if (a.indexOf(this[i]) === -1)
+                    a.push(this[i]);
+            return a;
+        }
+
+        /* functions */
+        function loadWords(onWordsLoaded) {
+            var request = new XMLHttpRequest();
+            request.open('GET', 'enable1.txt', true);
+            request.send(null);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    var type = request.getResponseHeader('Content-Type');
+                    if (type.indexOf('text') !== 1) {
+                        var lines = request.responseText.split(/\r|\n/).filter(function (s) { return s != ''; });
+                        onWordsLoaded(lines);
+                    }
+                }
+            }
+        }
+
+        function findAnagrams(letters) {
+            var anagrams = [];
+
+            if (letters.indexOf('?') > 0) {
+                for (var i = 0; i < alphabet.length; i++) {
+                    var letter = alphabet.charAt(i);
+                    // javascript replace is just first instance
+                    var newLetters = letters.replace('?', letter);
+                    anagrams = anagrams.concat(findAnagrams(newLetters));
+                }
+                return anagrams.distinct().sort();
+            }
+            else {
+                var key = letters.toAnagramKey();
+                for (var i = 0; i < words.length; i++) {
+                    var word = words[i];
+                    if (key == word.toAnagramKey()) {
+                        anagrams.push(word);
+                    }
+                }
+            }
+            return anagrams;
+        }
+
+        /* globals */
+        var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+        var words = [];
+
+        /* wire up UI */
+        loadWords(function (w) {
+            words = w;
+            UI.status.innerText = words.length + ' words loaded.';
+        });
+        UI.findAnagramsButton.onclick = function () {
+            var letters = UI.letters.value;
+            var anagrams = findAnagrams(letters);
+            UI.status.innerText = anagrams.length + ' anagrams found';
+            UI.results.innerText = anagrams.join('\r');
+        }
+    </script>
+</body>
+
+</html>
