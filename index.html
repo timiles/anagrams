@@ -25,7 +25,7 @@
         };
 
         /* prototype extensions */
-        String.prototype.removeCharAt = function(i) {
+        String.prototype.removeCharAt = function (i) {
             if (i < 0 || i > this.length) {
                 throw 'Index out of range: ' + i + '. Length of string: ' + this.length;
             }
@@ -60,27 +60,37 @@
             }
         }
 
+        function createAnagramDictionary(words) {
+            var dictionary = new Map();
+            for (var i = 0; i < words.length; i++) {
+                var word = words[i];
+                var key = word.toAnagramKey();
+                if (!dictionary.has(key)) {
+                    dictionary.set(key, [word]);
+                }
+                else {
+                    dictionary.get(key).push(word);
+                }
+            }
+            return dictionary;
+        }
         function findAnagrams(letters, numberOfBlanks = 0) {
-            var anagrams = [];
 
-            if (numberOfBlanks > 0) {
-                for (var i = 0; i < alphabet.length; i++) {
-                    var letter = alphabet.charAt(i);
-                    var newLetters = letters + letter;
-                    anagrams = anagrams.concat(findAnagrams(newLetters, numberOfBlanks - 1));
-                }
-                return anagrams.distinct().sort();
-            }
-            else {
+            if (numberOfBlanks == 0) {
                 var key = letters.toAnagramKey();
-                for (var i = 0; i < words.length; i++) {
-                    var word = words[i];
-                    if (key == word.toAnagramKey()) {
-                        anagrams.push(word);
-                    }
+                return anagramDictionary.get(key);
+            }
+
+            var allAnagrams = [];
+            for (var i = 0; i < alphabet.length; i++) {
+                var letter = alphabet.charAt(i);
+                var newLetters = letters + letter;
+                var anagrams = findAnagrams(newLetters, numberOfBlanks - 1);
+                if (anagrams) {
+                    allAnagrams = allAnagrams.concat(anagrams);
                 }
             }
-            return anagrams;
+            return allAnagrams.distinct().sort();
         }
 
         function findLongestWords(letters, maxNumberOfExtraTiles = 1) {
@@ -100,12 +110,12 @@
 
         /* globals */
         var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-        var words = [];
+        var anagramDictionary = undefined;
 
         /* wire up UI */
         loadWords(function (w) {
-            words = w;
-            UI.status.innerText = words.length + ' words loaded.';
+            anagramDictionary = createAnagramDictionary(w);
+            UI.status.innerText = w.length + ' words loaded.';
         });
         UI.findAnagramsButton.onclick = function () {
             var lettersWithBlanks = UI.letters.value;
