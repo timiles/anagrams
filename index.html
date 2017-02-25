@@ -60,15 +60,14 @@
             }
         }
 
-        function findAnagrams(letters) {
+        function findAnagrams(letters, numberOfBlanks = 0) {
             var anagrams = [];
 
-            if (letters.indexOf('?') > 0) {
+            if (numberOfBlanks > 0) {
                 for (var i = 0; i < alphabet.length; i++) {
                     var letter = alphabet.charAt(i);
-                    // javascript replace is just first instance
-                    var newLetters = letters.replace('?', letter);
-                    anagrams = anagrams.concat(findAnagrams(newLetters));
+                    var newLetters = letters + letter;
+                    anagrams = anagrams.concat(findAnagrams(newLetters, numberOfBlanks - 1));
                 }
                 return anagrams.distinct().sort();
             }
@@ -109,8 +108,10 @@
             UI.status.innerText = words.length + ' words loaded.';
         });
         UI.findAnagramsButton.onclick = function () {
-            var letters = UI.letters.value;
-            var anagrams = findAnagrams(letters);
+            var lettersWithBlanks = UI.letters.value;
+            var letters = lettersWithBlanks.replace(/\?/g, '');
+            var numberOfBlanks = lettersWithBlanks.length - letters.length;
+            var anagrams = findAnagrams(letters, numberOfBlanks);
             UI.status.innerText = anagrams.length + ' anagrams found';
             UI.results.innerText = anagrams.join('\r');
         };
