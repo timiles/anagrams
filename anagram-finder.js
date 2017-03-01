@@ -38,9 +38,9 @@ var AnagramFinder = function (words) {
         return dictionary;
     }
 
-    this.findAnagrams = function (letters, numberOfBlanks = 0) {
+    this.findAnagrams = function (letters, numberOfExtraLetters = 0) {
 
-        if (numberOfBlanks == 0) {
+        if (numberOfExtraLetters == 0) {
             var key = letters.toAnagramKey();
             return anagramDictionary.get(key);
         }
@@ -49,7 +49,7 @@ var AnagramFinder = function (words) {
         for (var i = 0; i < alphabet.length; i++) {
             var letter = alphabet.charAt(i);
             var newLetters = letters + letter;
-            var anagrams = this.findAnagrams(newLetters, numberOfBlanks - 1);
+            var anagrams = this.findAnagrams(newLetters, numberOfExtraLetters - 1);
             if (anagrams) {
                 allAnagrams = allAnagrams.concat(anagrams);
             }
@@ -77,15 +77,15 @@ var AnagramFinder = function (words) {
         return subsets.distinct();
     }
 
-    this.findLongestWords = function (letters, maxNumberOfExtraTiles = 1) {
+    this.findLongestWords = function (letters, maxNumberOfExtraLetters = 1) {
         var subsetsOfLetters = getAllSubsetsOfLetters(letters);
         var currentLengthToTest = letters.length;
         var words = [];
         while (words.length === 0 && currentLengthToTest > 0) {
             for (var i = 0; i < subsetsOfLetters.length; i++) {
                 if (subsetsOfLetters[i].length === currentLengthToTest) {
-                    for (var numberOfExtraTiles = maxNumberOfExtraTiles; numberOfExtraTiles >= 0; numberOfExtraTiles--) {
-                        var anagrams = this.findAnagrams(subsetsOfLetters[i], numberOfExtraTiles);
+                    for (var numberOfExtraLetters = maxNumberOfExtraLetters; numberOfExtraLetters >= 0; numberOfExtraLetters--) {
+                        var anagrams = this.findAnagrams(subsetsOfLetters[i], numberOfExtraLetters);
                         if (anagrams) {
                             words = words.concat(anagrams);
                         }
