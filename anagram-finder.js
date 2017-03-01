@@ -42,7 +42,7 @@ var AnagramFinder = function (words) {
 
         if (numberOfExtraLetters == 0) {
             var key = letters.toAnagramKey();
-            return anagramDictionary.get(key);
+            return anagramDictionary.get(key) || [];
         }
 
         var allAnagrams = [];
@@ -50,9 +50,7 @@ var AnagramFinder = function (words) {
             var letter = alphabet.charAt(i);
             var newLetters = letters + letter;
             var anagrams = this.findAnagrams(newLetters, numberOfExtraLetters - 1);
-            if (anagrams) {
-                allAnagrams = allAnagrams.concat(anagrams);
-            }
+            allAnagrams = allAnagrams.concat(anagrams);
         }
         return allAnagrams.distinct().sort();
     }
@@ -86,9 +84,7 @@ var AnagramFinder = function (words) {
                 if (subsetsOfLetters[i].length === currentLengthToTest) {
                     for (var numberOfExtraLetters = maxNumberOfExtraLetters; numberOfExtraLetters >= 0; numberOfExtraLetters--) {
                         var anagrams = this.findAnagrams(subsetsOfLetters[i], numberOfExtraLetters);
-                        if (anagrams) {
-                            words = words.concat(anagrams);
-                        }
+                        words = words.concat(anagrams);
                     }
                 }
             }
