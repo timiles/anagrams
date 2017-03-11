@@ -54,6 +54,25 @@
             }
         }
 
+        function highlightBold(s) {
+            return '<b>' + s + '</b>';
+        }
+
+        function highlightExtraLetters(word, originalLetters, highlight) {
+            var s = '';
+            for (var i = 0; i < word.length; i++) {
+                var letter = word[i];
+                var indexOfLetter = originalLetters.indexOf(letter);
+                if (indexOfLetter >= 0) {
+                    s += letter;
+                    originalLetters = originalLetters.removeCharAt(indexOfLetter);
+                } else {
+                    s += highlight(letter);
+                }
+            }
+            return s;
+        }
+
         /* wire up UI */
         loadWords(function (w) {
             anagramFinder = new AnagramFinder(w);
@@ -67,16 +86,24 @@
             var letters = lettersWithBlanks.replace(/\?/g, '');
             var numberOfBlanks = lettersWithBlanks.length - letters.length;
             var anagrams = anagramFinder.findAnagrams(letters, numberOfBlanks);
-            UI.status.innerText = anagrams.length + ' anagrams found';
-            UI.results.innerText = anagrams.join('\r');
+            var anagramsHighlighted = anagrams.map(
+                function(word) {
+                    return highlightExtraLetters(word, letters, highlightBold);
+                });
+            UI.status.innerText = anagramsHighlighted.length + ' anagrams found';
+            UI.results.innerHTML = anagramsHighlighted.join('<br />');
         };
         UI.findLongestWordsButton.onclick = function () {
             var lettersWithBlanks = UI.letters.value;
             var letters = lettersWithBlanks.replace(/\?/g, '');
             var numberOfBlanks = lettersWithBlanks.length - letters.length;
             var longestWords = anagramFinder.findLongestWords(letters, numberOfBlanks);
-            UI.status.innerText = longestWords.length + ' words found';
-            UI.results.innerText = longestWords.join('\r');
+            var longestWordsHighlighted = longestWords.map(
+                function(word) {
+                    return highlightExtraLetters(word, letters, highlightBold);
+                });
+            UI.status.innerText = longestWordsHighlighted.length + ' words found';
+            UI.results.innerHTML = longestWordsHighlighted.join('<br />');
         };
     </script>
 </body>
