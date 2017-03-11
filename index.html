@@ -59,6 +59,9 @@
             anagramFinder = new AnagramFinder(w);
             UI.status.innerText = w.length + ' words loaded.';
         });
+        UI.letters.onkeyup = function() {
+            this.value = this.value.toLowerCase();
+        }
         UI.findAnagramsButton.onclick = function () {
             var lettersWithBlanks = UI.letters.value;
             var letters = lettersWithBlanks.replace(/\?/g, '');
