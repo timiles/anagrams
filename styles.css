@@ -1,6 +1,7 @@
 body {
     max-width: 600px;
     margin: auto;
+    padding: 2em;
 }
 
 body, input, button {
