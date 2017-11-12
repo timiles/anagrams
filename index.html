@@ -15,14 +15,20 @@
         <span id="status">Loading...</span>
     </div>
     <div>
-        <label for="letters">Enter letters, including <b>?</b> for blanks:</label>
+        <label for="letters">Enter letters, including
+            <b>?</b> for blanks:</label>
     </div>
     <div>
         <input id="letters" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     </div>
     <div>
         <button id="findAnagramsButton">Find anagrams</button>
+    </div>
+    <div>
         <button id="findLongestWordsButton">Find longest words</button>
+    </div>
+    <div>
+        <button id="findCrosswordAnswersButton">Find crossword answers</button>
     </div>
     <p id="results"></p>
 
@@ -35,6 +41,7 @@
             status: document.getElementById('status'),
             findAnagramsButton: document.getElementById('findAnagramsButton'),
             findLongestWordsButton: document.getElementById('findLongestWordsButton'),
+            findCrosswordAnswersButton: document.getElementById('findCrosswordAnswersButton'),
             letters: document.getElementById('letters'),
             results: document.getElementById('results')
         };
@@ -78,7 +85,7 @@
             anagramFinder = new AnagramFinder(w);
             UI.status.innerText = w.length + ' words loaded.';
         });
-        UI.letters.onkeyup = function() {
+        UI.letters.onkeyup = function () {
             this.value = this.value.toLowerCase();
         }
         UI.findAnagramsButton.onclick = function () {
@@ -87,7 +94,7 @@
             var numberOfBlanks = lettersWithBlanks.length - letters.length;
             var anagrams = anagramFinder.findAnagrams(letters, numberOfBlanks);
             var anagramsHighlighted = anagrams.map(
-                function(word) {
+                function (word) {
                     return highlightExtraLetters(word, letters, highlightBold);
                 });
             UI.status.innerText = anagramsHighlighted.length + ' anagrams found';
@@ -99,11 +106,17 @@
             var numberOfBlanks = lettersWithBlanks.length - letters.length;
             var longestWords = anagramFinder.findLongestWords(letters, numberOfBlanks);
             var longestWordsHighlighted = longestWords.map(
-                function(word) {
+                function (word) {
                     return highlightExtraLetters(word, letters, highlightBold);
                 });
             UI.status.innerText = longestWordsHighlighted.length + ' words found';
             UI.results.innerHTML = longestWordsHighlighted.join('<br />');
+        };
+        UI.findCrosswordAnswersButton.onclick = function () {
+            var lettersWithBlanks = UI.letters.value;
+            var crosswordAnswers = anagramFinder.findCrosswordAnswers(lettersWithBlanks);
+            UI.status.innerText = crosswordAnswers.length + ' words found';
+            UI.results.innerHTML = crosswordAnswers.join('<br />');
         };
     </script>
 </body>

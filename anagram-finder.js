@@ -92,4 +92,17 @@ var AnagramFinder = function (words) {
         }
         return words.distinct();
     }
+
+    this.findCrosswordAnswers = function (lettersWithBlanks) {
+        var results = [];
+        var regex = new RegExp('^' + lettersWithBlanks.replace(/\?/g, '.') + '$');
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i];
+            var match = regex.exec(word);
+            if (match) {
+                results.push(word);
+            }
+        }
+        return results;
+    }
 }
